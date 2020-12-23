@@ -5,21 +5,7 @@ using UnityEngine;
 
 public static class LoopCommands
 {
-    public struct LoopData
-    {
-        public enum TYPE
-        {
-            FOREVER,
-            COUNT,
-            CONDITION
-        }
-
-        public TYPE Type;
-        public int Count;
-        
-        //TODO Include condition
-
-    }
+    
     public static IEnumerator LoopCoroutine(MonoBehaviour monoBehaviour, LoopData loopData, IReadOnlyList<IEnumerator> internalCommands)
     {
         switch (loopData.Type)
