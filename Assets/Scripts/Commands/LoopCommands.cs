@@ -6,7 +6,7 @@ using UnityEngine;
 public static class LoopCommands
 {
     
-    public static IEnumerator LoopCoroutine(MonoBehaviour monoBehaviour, LoopData loopData, IReadOnlyList<IEnumerator> internalCommands)
+    public static IEnumerator LoopCoroutine(MonoBehaviour monoBehaviour, LoopData loopData, List<IEnumerator> internalCommands)
     {
         switch (loopData.Type)
         {
