@@ -1,41 +1,85 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public static class LoopCommands
+public class InfiniteLoopCommand : ICommand
 {
+    private readonly ICommand[] _internalCommands;
+    private int _currentIndex;
     
-    public static IEnumerator LoopCoroutine(MonoBehaviour monoBehaviour, LoopData loopData, List<IEnumerator> internalCommands)
+    public InfiniteLoopCommand(IEnumerable<ICommand> internalCommands)
     {
-        switch (loopData.Type)
+        _internalCommands = internalCommands.ToArray();
+        _currentIndex = 0;
+    }
+    
+    public bool MoveNext()
+    {
+        //Call the current command until it gives the green light to move to the next index
+        if (!_internalCommands[_currentIndex].MoveNext())
+            return false;
+
+        if (_currentIndex + 1 >= _internalCommands.Length)
+            _currentIndex = 0;
+        else _currentIndex++;
+
+        return false;
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class FixedLoopCommand : ICommand
+{
+    private int _currentCount;
+    private readonly int _count;
+    
+    private readonly ICommand[] _internalCommands;
+    private int _currentIndex;
+    
+    public FixedLoopCommand(int count, IEnumerable<ICommand> internalCommands)
+    {
+        _internalCommands = internalCommands.ToArray();
+        _currentIndex = 0;
+
+        _count = count;
+    }
+    
+    public bool MoveNext()
+    {
+        //Call the current command until it gives the green light to move to the next index
+        if (!_internalCommands[_currentIndex].MoveNext())
+            return false;
+
+        //If we reached the end of the loop, add one to the loop count and reset the current selected index
+        if (_currentIndex + 1 >= _internalCommands.Length)
         {
-            //--------------------------------------------------------------------------------------------------------//
-            case LoopData.TYPE.FOREVER:
-                while (true)
-                {
-                    foreach (var internalCommand in internalCommands)
-                    {
-                        yield return monoBehaviour.StartCoroutine(internalCommand);
-                    }
-                }
-                break;
-            //--------------------------------------------------------------------------------------------------------//
-            case LoopData.TYPE.COUNT:
-                for (var i = 0; i < loopData.Count; i++)
-                {
-                    foreach (var internalCommand in internalCommands)
-                    {
-                        yield return monoBehaviour.StartCoroutine(internalCommand);
-                    }
-                }
-                break;
-            //--------------------------------------------------------------------------------------------------------//
-            case LoopData.TYPE.CONDITION:
-                throw new NotImplementedException();
-            //--------------------------------------------------------------------------------------------------------//
-            default:
-                throw new ArgumentOutOfRangeException(nameof(loopData.Type), loopData.Type, null);
+            _currentCount++;
+            _currentIndex = 0;
         }
+        else
+        {
+            _currentIndex++;
+        }
+
+        //keep looping until we reach the threshold of _count
+        if (_currentCount < _count) 
+            return false;
+        
+        //Clean this up before we leave, so that if/when we return its ready
+        Reset();
+        
+        return true;
+
+    }
+
+    public void Reset()
+    {
+        _currentCount = 0;
+        _currentIndex = 0;
     }
 }

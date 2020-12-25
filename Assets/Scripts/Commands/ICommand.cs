@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ConditionalCommands
+public interface ICommand
 {
-    
+    public bool MoveNext();
+
+    public void Reset();
 }

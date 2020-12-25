@@ -1,35 +1,41 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class MoveCommands
+public class MoveCommand : ICommand
 {
-    public static IEnumerator MoveToCoroutine(MonoBehaviour monoBehaviour, Transform target, float speed)
+    private readonly Transform _moving;
+    
+    private readonly Transform _target;
+    private readonly float _speed;
+    
+    public MoveCommand(Transform moving, Transform target, float speed)
     {
-        var mover = monoBehaviour.transform;
-        var dist = 999f;
-        while (dist > 0.5f)
-        {
-            var targetPosition = target.position;
-            var currentPosition = mover.position;
-            
-            
-            currentPosition = Vector3.MoveTowards(currentPosition, targetPosition, speed * Time.deltaTime);
+        _moving = moving;
+        
+        _target = target;
 
-            dist = Vector3.Distance(currentPosition, targetPosition);
+        _speed = speed;
+    }
+    
+    public bool MoveNext()
+    {
+        var currentPosition = _moving.position;
+        var targetPosition = _target.position;
 
-            mover.position = currentPosition;
-            
-            yield return null;
-        }
+        if (Vector3.Distance(currentPosition, targetPosition) <= 0.5)
+            return true;
+        
+        
+        currentPosition = Vector3.MoveTowards(currentPosition, targetPosition, _speed * Time.deltaTime);
+        
+        _moving.position = currentPosition;
+
+        return false;
     }
-    public static IEnumerator MoveToCoroutine(MonoBehaviour monoBehaviour, Vector3 targetLocation, float speed)
+
+    public void Reset()
     {
-        throw new NotImplementedException();
-    }
-    public static IEnumerator MoveToCoroutine(MonoBehaviour monoBehaviour/*, Interactable*/, float speed)
-    {
-        throw new NotImplementedException();
+        throw new System.NotImplementedException();
     }
 }
