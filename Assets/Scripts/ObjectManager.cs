@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
-    public List<Transform> objects;
+    public List<InteractableBase> objects;
 }

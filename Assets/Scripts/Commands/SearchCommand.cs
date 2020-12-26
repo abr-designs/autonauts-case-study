@@ -2,26 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //FIXME This needs to store a reference, but also be able to be called using regular MoveNext
-public class SearchCommand : ICommand
+public class SearchCommand : TargetCommandBase
 {
-    private readonly Transform _moving;
-    private readonly IStoreTarget _iStoreTarget;
     private readonly ObjectManager _objectManager;
     private readonly Vector3 _searchLocation;
     private readonly float _radius;
     
-    public SearchCommand(ObjectManager objectManager,Transform moving, IStoreTarget iStoreTarget, Vector3 searchLocation, float searchRadius)
+    public SearchCommand(Transform moving, IStoreTarget iStoreTarget, ObjectManager objectManager, Vector3 searchLocation, float searchRadius) : base (moving, iStoreTarget)
     {
-        _moving = moving;
-        
         _searchLocation = searchLocation;
         _radius = searchRadius;
         _objectManager = objectManager;
-
-        _iStoreTarget = iStoreTarget;
     }
     
-    public bool MoveNext()
+    public override bool MoveNext()
     {
         var objects = _objectManager.objects.ToArray();
 
@@ -29,18 +23,21 @@ public class SearchCommand : ICommand
             return false;
 
         //Find all the objects that are legal targets
-        var possibleOptions = new List<Transform>();
+        var possibleOptions = new List<IInteractable>();
 
-        foreach (var t in objects)
+        foreach (var interactable in objects)
         {
-            var pos = t.position;
+            if (interactable == null)
+                continue;
+            
+            var pos = interactable.transform.position;
 
             var dist = Vector3.Distance(_searchLocation, pos);
             
             if (dist > _radius)
                 continue;
             
-            possibleOptions.Add(t);
+            possibleOptions.Add(interactable);
         }
 
         if (possibleOptions.Count <= 0)
@@ -52,9 +49,9 @@ public class SearchCommand : ICommand
         
         for (int i = 0; i < possibleOptions.Count; i++)
         {
-            var pos = possibleOptions[i].position;
+            var pos = possibleOptions[i].transform.position;
 
-            var dist = Vector3.Distance(_moving.position, pos);
+            var dist = Vector3.Distance(Moving.position, pos);
             
             if(dist >= shortestDist)
                 continue;
@@ -67,13 +64,13 @@ public class SearchCommand : ICommand
         if (shortestIndex < 0) 
             return false;
         
-        _iStoreTarget.StoredTarget = possibleOptions[shortestIndex];
-        Debug.DrawLine(_moving.position, _iStoreTarget.StoredTarget.position, Color.cyan, 1f);
+        IStoreTarget.StoredTarget = possibleOptions[shortestIndex];
+        Debug.DrawLine(Moving.position, IStoreTarget.StoredTarget.transform.position, Color.cyan, 1f);
 
         return true;
     }
 
-    public void Reset()
+    public override void Reset()
     {
         throw new System.NotImplementedException();
     }

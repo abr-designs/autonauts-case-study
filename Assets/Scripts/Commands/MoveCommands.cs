@@ -39,26 +39,19 @@ public class MoveCommand : ICommand
         throw new System.NotImplementedException();
     }
 }
-public class MoveToStoredTargetCommand : ICommand
+public class MoveToStoredTargetCommand : TargetCommandBase
 {
-    private readonly Transform _moving;
-
-    private readonly IStoreTarget _iStoreTarget;
     private readonly float _speed;
     
-    public MoveToStoredTargetCommand(Transform moving, IStoreTarget iStoreTarget, float speed)
+    public MoveToStoredTargetCommand(Transform moving, IStoreTarget iStoreTarget, float speed) : base(moving, iStoreTarget)
     {
-        _moving = moving;
-
-        _iStoreTarget = iStoreTarget;
-
         _speed = speed;
     }
     
-    public bool MoveNext()
+    public override bool MoveNext()
     {
-        var currentPosition = _moving.position;
-        var targetPosition = _iStoreTarget.StoredTarget.position;
+        var currentPosition = Moving.position;
+        var targetPosition = IStoreTarget.StoredTarget.transform.position;
 
         if (Vector3.Distance(currentPosition, targetPosition) <= 0.5)
             return true;
@@ -68,12 +61,12 @@ public class MoveToStoredTargetCommand : ICommand
         
         currentPosition = Vector3.MoveTowards(currentPosition, targetPosition, _speed * Time.deltaTime);
         
-        _moving.position = currentPosition;
+        Moving.position = currentPosition;
 
         return false;
     }
 
-    public void Reset()
+    public override void Reset()
     {
         throw new System.NotImplementedException();
     }

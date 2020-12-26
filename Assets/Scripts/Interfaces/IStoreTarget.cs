@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IStoreTarget
 {
-    Transform StoredTarget { get; set; }
+    IInteractable StoredTarget { get; set; }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TestBot : MonoBehaviour, IStoreTarget
 {
-    public Transform StoredTarget { get; set; }
+    public IInteractable StoredTarget { get; set; }
 
     //====================================================================================================================//
     
@@ -36,8 +36,9 @@ public class TestBot : MonoBehaviour, IStoreTarget
                 new MoveCommand(transform, testTarget2, speed),
                 new MoveCommand(transform, testTarget3, speed),
             }),
-            new SearchCommand(ObjectManager, transform, this, new Vector3(-19.7f,0,9.3f), 10f),
+            new SearchCommand(transform, this,ObjectManager, new Vector3(-19.7f,0,9.3f), 10f),
             new MoveToStoredTargetCommand(transform, this, speed),
+            new InteractableCommand(transform, this)
         });
     }
 
