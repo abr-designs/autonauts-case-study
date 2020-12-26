@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class InfiniteLoopCommand : ICommand
+public class InfiniteLoopCommand :LoopCommandBase, ICommand
 {
-    private readonly ICommand[] _internalCommands;
-    private int _currentIndex;
-    
-    public InfiniteLoopCommand(IEnumerable<ICommand> internalCommands)
+    public InfiniteLoopCommand(IEnumerable<ICommand> internalCommands) : base (internalCommands)
     {
-        _internalCommands = internalCommands.ToArray();
-        _currentIndex = 0;
     }
     
     public bool MoveNext()
@@ -33,19 +28,13 @@ public class InfiniteLoopCommand : ICommand
     }
 }
 
-public class FixedLoopCommand : ICommand
+public class FixedLoopCommand : LoopCommandBase, ICommand
 {
     private int _currentCount;
     private readonly int _count;
     
-    private readonly ICommand[] _internalCommands;
-    private int _currentIndex;
-    
-    public FixedLoopCommand(int count, IEnumerable<ICommand> internalCommands)
+    public FixedLoopCommand(IEnumerable<ICommand> internalCommands, int count) : base(internalCommands) 
     {
-        _internalCommands = internalCommands.ToArray();
-        _currentIndex = 0;
-
         _count = count;
     }
     
@@ -81,5 +70,37 @@ public class FixedLoopCommand : ICommand
     {
         _currentCount = 0;
         _currentIndex = 0;
+    }
+}
+
+public class ConditionalLoopCommand :LoopCommandBase, ICommand
+{
+    private readonly IConditional _iConditional;
+    private readonly CONDITION _condition;
+    public ConditionalLoopCommand(IEnumerable<ICommand> internalCommands, IConditional iConditional, CONDITION condition) : base (internalCommands)
+    {
+        _iConditional = iConditional;
+        _condition = condition;
+
+    }
+    public bool MoveNext()
+    {
+        if (_iConditional.MeetsCondition(_condition))
+            return true;
+        
+        //Call the current command until it gives the green light to move to the next index
+        if (!_internalCommands[_currentIndex].MoveNext())
+            return false;
+
+        if (_currentIndex + 1 >= _internalCommands.Length)
+            _currentIndex = 0;
+        else _currentIndex++;
+
+        return false;
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
     }
 }

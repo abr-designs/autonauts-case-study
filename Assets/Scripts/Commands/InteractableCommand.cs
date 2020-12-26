@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class InteractableCommand : TargetCommandBase
 {
-    public InteractableCommand(Transform moving, IStoreTarget iStoreTarget) : base(moving, iStoreTarget)
+    private readonly TestBot _testBot;
+    
+    
+    public InteractableCommand(Transform moving, IStoreTarget iStoreTarget, TestBot testBot) : base(moving, iStoreTarget)
     {
+        _testBot = testBot;
     }
 
     public override bool MoveNext()
@@ -17,7 +21,7 @@ public class InteractableCommand : TargetCommandBase
             return false;
         
         //Interact, and clear target
-        IStoreTarget.StoredTarget.Interact();
+        IStoreTarget.StoredTarget.Interact(_testBot);
         IStoreTarget.StoredTarget = null;
         
         return true;

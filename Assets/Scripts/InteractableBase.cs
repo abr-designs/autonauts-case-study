@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using UnityEngine;
 
 public class InteractableBase : MonoBehaviour, IInteractable
@@ -9,8 +10,9 @@ public class InteractableBase : MonoBehaviour, IInteractable
         transform = gameObject.transform;
     }
 
-    public void Interact()
+    public void Interact(in TestBot testBot)
     {
+        testBot.TryPickupInteractable(1);
         Destroy(gameObject);
     }
 }
