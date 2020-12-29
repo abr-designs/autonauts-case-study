@@ -17,9 +17,6 @@ public class DragController : MonoBehaviour, IPointerDownHandler, IDragHandler, 
 
     private static Canvas _canvas;
 
-    [SerializeField]
-    private VerticalLayoutGroup hoveredGameObject;
-    
     private void Start()
     {
         _currentTransform = gameObject.transform as RectTransform;
@@ -43,14 +40,6 @@ public class DragController : MonoBehaviour, IPointerDownHandler, IDragHandler, 
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject == null)
-            return;
-        
-        if (eventData.pointerCurrentRaycast.gameObject.GetComponent<VerticalLayoutGroup>() is VerticalLayoutGroup vlg)
-        {
-            hoveredGameObject = vlg;
-        }
-
         /*var pos = _currentTransform.position;
         pos.y = eventData.position.y;
         
