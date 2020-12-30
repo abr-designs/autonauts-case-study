@@ -110,17 +110,7 @@ public class LoopCommandElement : CommandElementBase
             
         }
         
-        LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent as RectTransform);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
-        /*Canvas.ForceUpdateCanvases();
-        var verticalLayoutGroup = FindObjectsOfType<VerticalLayoutGroup>();
-
-        foreach (var layoutGroup in verticalLayoutGroup)
-        {
-            layoutGroup.enabled = false;
-            layoutGroup.enabled = true;
-        }*/
-
+        UIManager.ForceUpdateLayouts();
     }
 
     private void SetObjectsActive(bool inputActive, bool targetActive, bool escActive)
