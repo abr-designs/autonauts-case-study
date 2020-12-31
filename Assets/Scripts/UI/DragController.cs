@@ -1,78 +1,128 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class DragController : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class DragController : MonoBehaviour
 {
-    private RectTransform _currentTransform;
-    private Image _image;
+    public bool isDragging { get; private set; }
+    private RectTransform _dragging;
+
+    [SerializeField]
+    private RectTransform placementPreviewTransform;
     
-    private GameObject _mainContent;
-    private Vector3 _currentPosition;
+    [SerializeField]
+    private List<CommandElementBase> _commandElementBases;
 
-    private int _totalChild;
+    private List<Vector2> previewPositions;
 
-    private static Canvas _canvas;
+    private new Transform transform;
 
+    //Unity Functions
+    //====================================================================================================================//
+    
     private void Start()
     {
-        _currentTransform = gameObject.transform as RectTransform;
-        _image = GetComponent < Image>();
+        transform = gameObject.transform;
+        
+        placementPreviewTransform.gameObject.SetActive(false);
+    }
 
-        if (!_canvas)
+    //Dragging Functions
+    //====================================================================================================================//
+    
+    public void OnDragStarted(RectTransform dragging)
+    {
+        _dragging = dragging;
+        isDragging = true;
+        
+        _dragging.SetParent(transform);
+
+        UIManager.ForceUpdateLayouts();
+        UpdateCommandList();
+        placementPreviewTransform.gameObject.SetActive(true);
+        
+    }
+
+    public void OnDrag(Vector2 mousePosition)
+    {
+        if (!isDragging)
+            return;
+        
+        _dragging.position = mousePosition;
+
+        var previewPos = FindClosestPreviewLocation(mousePosition);
+        placementPreviewTransform.position = previewPos;
+    }
+
+    public void OnDragCompleted()
+    {
+        _dragging = null;
+        isDragging = false;
+        placementPreviewTransform.gameObject.SetActive(false);
+    }
+
+    //Calculation Functions
+    //====================================================================================================================//
+    
+    private void UpdateCommandList()
+    {
+        previewPositions = new List<Vector2>();
+        _commandElementBases = GetComponentsInChildren<CommandElementBase>().Where(x => x.transform != _dragging).ToList();
+        
+        UpdatePositionList();
+    }
+
+    private void UpdatePositionList()
+    {
+        foreach (var elementBase in _commandElementBases)
         {
-            _canvas = GetComponentInParent<Canvas>();
+            var pos = elementBase.transform.position;
+            previewPositions.Add(pos);
+
+            //Add the loop interior position
+            if (!(elementBase is LoopCommandElement loopCommandElement)) 
+                continue;
+
+            UpdateLocationsForLoop(loopCommandElement);
         }
+
+        //Add the position at the bottom of the list
+        var last = _commandElementBases[_commandElementBases.Count - 1].transform;
+        var localPos = (Vector3) (last.sizeDelta * Vector3.down);
+        
+        previewPositions.Add(last.TransformPoint(localPos));
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    private Vector2 FindClosestPreviewLocation(Vector2 pos)
     {
-        /*_currentPosition = _currentTransform.position;
-        _mainContent = _currentTransform.parent.gameObject;
-        _totalChild = _mainContent.transform.childCount;*/
-        
-        _currentTransform.SetParent(_canvas.transform, true);
-        _image.raycastTarget = false;
-    }
+        var y = pos.y;
+        var shortestDist = 999f;
+        var closestPos = Vector2.zero;
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        /*var pos = _currentTransform.position;
-        pos.y = eventData.position.y;
-        
-        /*_currentTransform.position =
-            new Vector3(_currentTransform.position.x, eventData.position.y, _currentTransform.position.z);#1#
-
-        for (var i = 0; i < _totalChild; i++)
+        foreach (var previewPosition in previewPositions)
         {
-            if (i == _currentTransform.GetSiblingIndex()) 
+            var dist = Mathf.Abs(y - previewPosition.y);
+            if(dist >= shortestDist)
                 continue;
-            
-            var otherTransform = _mainContent.transform.GetChild(i);
-            var otherTransformPosition = otherTransform.position;
-            var distance = (int) Vector3.Distance(pos, otherTransformPosition);
-            
-            if (distance > 10) 
-                continue;
-            
-            /*var otherTransformOldPosition = otherTransform.position;
-            otherTransformPosition.y = _currentPosition.y;
-                    
-            pos.y = otherTransformOldPosition.y;#1#
-                    
-            _currentTransform.SetSiblingIndex(otherTransform.GetSiblingIndex());
-            //_currentPosition = pos;
 
-            //otherTransform.position = otherTransformPosition;
+            shortestDist = dist;
+            closestPos = previewPosition;
         }
 
-        //_currentTransform.position = pos;*/
-        _currentTransform.position = eventData.position;
+        return closestPos;
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    private void UpdateLocationsForLoop(in LoopCommandElement loopCommandElement)
     {
-        //_currentTransform.position = _currentPosition;
+        var loopTrans = loopCommandElement.transform;
         
+        
+        var offset = loopTrans.sizeDelta.y / 2f;
+        var loopPos = new Vector2(offset, -offset);
+        previewPositions.Add(loopTrans.TransformPoint(loopPos));
     }
+
+    //====================================================================================================================//
+    
 }
