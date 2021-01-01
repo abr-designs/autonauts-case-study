@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,8 +6,27 @@ using UnityEngine;
 
 public class DragController : MonoBehaviour
 {
+    [Serializable]
+    public struct MoveData
+    {
+        public enum DIR
+        {
+            NONE,
+            ABOVE,
+            BELOW
+        }
+
+        public Vector2 previewPosition;
+        
+        public Transform siblingTransform;
+        public DIR direction;
+    }
+
+    //====================================================================================================================//
+    
     public bool isDragging { get; private set; }
     private RectTransform _dragging;
+    private MoveData _currentMoveData;
 
     [SerializeField]
     private RectTransform placementPreviewTransform;
@@ -14,7 +34,7 @@ public class DragController : MonoBehaviour
     [SerializeField]
     private List<CommandElementBase> _commandElementBases;
 
-    private List<Vector2> previewPositions;
+    private List<MoveData> _previewData;
 
     private new Transform transform;
 
@@ -51,15 +71,30 @@ public class DragController : MonoBehaviour
         
         _dragging.position = mousePosition;
 
-        var previewPos = FindClosestPreviewLocation(mousePosition);
-        placementPreviewTransform.position = previewPos;
+        _currentMoveData = FindClosestPreviewLocation(mousePosition);
+        placementPreviewTransform.position = _currentMoveData.previewPosition;
     }
 
     public void OnDragCompleted()
     {
+        _dragging.SetParent(_currentMoveData.siblingTransform.parent);
+        switch (_currentMoveData.direction)
+        {
+            case MoveData.DIR.ABOVE:
+                _dragging.SetSiblingIndex(_currentMoveData.siblingTransform.GetSiblingIndex() - 1);
+                break;
+            case MoveData.DIR.BELOW:
+                _dragging.SetSiblingIndex(_currentMoveData.siblingTransform.GetSiblingIndex() + 1);
+                break;
+        }
+
+        
         _dragging = null;
         isDragging = false;
         placementPreviewTransform.gameObject.SetActive(false);
+        
+        UIManager.ForceUpdateLayouts();
+        
     }
 
     //Calculation Functions
@@ -67,7 +102,7 @@ public class DragController : MonoBehaviour
     
     private void UpdateCommandList()
     {
-        previewPositions = new List<Vector2>();
+        _previewData = new List<MoveData>();
         _commandElementBases = GetComponentsInChildren<CommandElementBase>().Where(x => x.transform != _dragging).ToList();
         
         UpdatePositionList();
@@ -78,7 +113,12 @@ public class DragController : MonoBehaviour
         foreach (var elementBase in _commandElementBases)
         {
             var pos = elementBase.transform.position;
-            previewPositions.Add(pos);
+            _previewData.Add(new MoveData
+            {
+                previewPosition = pos,
+                siblingTransform = elementBase.transform,
+                direction = MoveData.DIR.ABOVE
+            });
 
             //Add the loop interior position
             if (!(elementBase is LoopCommandElement loopCommandElement)) 
@@ -91,36 +131,63 @@ public class DragController : MonoBehaviour
         var last = _commandElementBases[_commandElementBases.Count - 1].transform;
         var localPos = (Vector3) (last.sizeDelta * Vector3.down);
         
-        previewPositions.Add(last.TransformPoint(localPos));
+        _previewData.Add(new MoveData
+        {
+            previewPosition = last.TransformPoint(localPos),
+            siblingTransform = last,
+            direction = MoveData.DIR.BELOW
+        });
     }
 
-    private Vector2 FindClosestPreviewLocation(Vector2 pos)
+    private MoveData FindClosestPreviewLocation(Vector2 pos)
     {
         var y = pos.y;
         var shortestDist = 999f;
-        var closestPos = Vector2.zero;
+        var closest = new MoveData();
 
-        foreach (var previewPosition in previewPositions)
+        foreach (var moveData in _previewData)
         {
-            var dist = Mathf.Abs(y - previewPosition.y);
+            var dist = Mathf.Abs(y - moveData.previewPosition.y);
             if(dist >= shortestDist)
                 continue;
 
             shortestDist = dist;
-            closestPos = previewPosition;
+            closest = moveData;
         }
 
-        return closestPos;
+        return closest;
     }
 
     private void UpdateLocationsForLoop(in LoopCommandElement loopCommandElement)
     {
         var loopTrans = loopCommandElement.transform;
-        
-        
+        var cmb = loopTrans.GetChild(loopTrans.childCount - 1).GetComponent<CommandElementBase>();
+
+        if (loopTrans.childCount > 2 && !(cmb is null) && cmb.gameObject.activeInHierarchy)
+        {
+            //Add the position at the bottom of the list
+            var last = cmb.transform;
+            var localPos = (Vector3) (last.sizeDelta * Vector3.down);
+
+            _previewData.Add(new MoveData
+            {
+                previewPosition = last.TransformPoint(localPos),
+                siblingTransform = last,
+                direction = MoveData.DIR.BELOW
+            });
+
+            return;
+        }
+
         var offset = loopTrans.sizeDelta.y / 2f;
         var loopPos = new Vector2(offset, -offset);
-        previewPositions.Add(loopTrans.TransformPoint(loopPos));
+        _previewData.Add(new MoveData
+        {
+            previewPosition = loopTrans.TransformPoint(loopPos),
+            siblingTransform = null,
+            direction = MoveData.DIR.NONE
+        });
+
     }
 
     //====================================================================================================================//
