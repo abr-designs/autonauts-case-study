@@ -18,16 +18,25 @@ public class Dragable : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if(eventData.button != PointerEventData.InputButton.Left)
+            return;
+        
         _dragController.OnDragStarted(_currentTransform);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if(eventData.button != PointerEventData.InputButton.Left)
+            return;
+        
         _dragController.OnDrag(eventData.position);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if(eventData.button != PointerEventData.InputButton.Left)
+            return;
+        
         _dragController.OnDragCompleted();
     }
 }

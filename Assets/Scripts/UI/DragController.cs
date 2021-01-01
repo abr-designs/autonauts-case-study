@@ -40,6 +40,11 @@ public class DragController : MonoBehaviour
     }
 
     //====================================================================================================================//
+
+    
+
+    //====================================================================================================================//
+    
     
     public bool isDragging { get; private set; }
     private RectTransform _dragging;
@@ -48,7 +53,7 @@ public class DragController : MonoBehaviour
     [SerializeField]
     private RectTransform placementPreviewTransform;
     
-    [SerializeField]
+    //[SerializeField]
     private List<CommandElementBase> _commandElementBases;
 
     private List<MoveData> _previewData;
@@ -78,7 +83,9 @@ public class DragController : MonoBehaviour
         UIManager.ForceUpdateLayouts();
         UpdateCommandList();
         placementPreviewTransform.gameObject.SetActive(true);
-        
+
+        Highlight(_dragging);
+
     }
 
     public void OnDrag(Vector2 mousePosition)
@@ -94,7 +101,9 @@ public class DragController : MonoBehaviour
 
     public void OnDragCompleted()
     {
+        ResetColor(_dragging);
         _currentMoveData.SetSibling(_dragging);
+        
         
         _dragging = null;
         isDragging = false;
@@ -195,6 +204,27 @@ public class DragController : MonoBehaviour
             direction = MoveData.DIR.NONE
         });
 
+    }
+
+    //Color States
+    //====================================================================================================================//
+
+    private void Highlight(in RectTransform rectTransform)
+    {
+        var elements = rectTransform.GetComponentsInChildren<CommandElementBase>();
+        foreach (var elementBase in elements)
+        {
+            elementBase.LightenColor();
+        }
+    }
+
+    private void ResetColor(in RectTransform rectTransform)
+    {
+        var elements = rectTransform.GetComponentsInChildren<CommandElementBase>();
+        foreach (var elementBase in elements)
+        {
+            elementBase.ResetColor();
+        }
     }
 
     //====================================================================================================================//

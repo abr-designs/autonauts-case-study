@@ -1736,6 +1736,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4528298259349327847}
   - component: {fileID: 4175304403548472204}
+  - component: {fileID: 9057262657953428261}
   - component: {fileID: 4147593230928748720}
   - component: {fileID: 2764783219518021908}
   - component: {fileID: 5812654743830056756}
@@ -1785,6 +1786,18 @@ MonoBehaviour:
   numberInputField: {fileID: 5678730226315511892}
   targetToggle: {fileID: 1869740610428140572}
   escapeToggle: {fileID: 6729935637311187916}
+--- !u!114 &9057262657953428261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6319098003674121847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afe68ccec3e550f4382072b0519e9501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &4147593230928748720
 CanvasRenderer:
   m_ObjectHideFlags: 0

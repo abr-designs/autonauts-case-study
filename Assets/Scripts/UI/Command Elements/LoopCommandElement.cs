@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class LoopCommandElement : CommandElementBase
@@ -29,6 +31,34 @@ public class LoopCommandElement : CommandElementBase
     }
 
     //====================================================================================================================//
+    
+    public override void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Right) 
+            return;
+
+        var children = GetCommandElementsInChildren().ToArray();
+
+        if (children.Length > 0)
+        {
+            var parent = transform.parent;
+            var siblingIndex = transform.GetSiblingIndex();
+            
+            for (int i = children.Length - 1; i >= 0; i--)
+            {
+                var child = children[i].transform;
+                
+                child.SetParent(parent);
+                child.SetSiblingIndex(siblingIndex);
+            }
+        }
+
+        
+        Destroy(gameObject);
+        UIManager.ForceUpdateLayouts();
+    }
+
+    //====================================================================================================================//
 
     public override ICommand GenerateCommand()
     {
@@ -50,17 +80,20 @@ public class LoopCommandElement : CommandElementBase
         }
     }
 
-    public override CommandElementBase GetParentGroup()
-    {
-        throw new System.NotImplementedException();
-    }
-
-
     //====================================================================================================================//
 
     private IEnumerable<ICommand> GetCommandInChildren()
     {
-        var outList = new List<ICommand>();
+        var children = GetCommandElementsInChildren().ToArray();
+
+        return children.Any()
+            ? children.Select(commandElementBase => commandElementBase.GenerateCommand())
+            : null;
+    }
+    
+    private IEnumerable<CommandElementBase> GetCommandElementsInChildren()
+    {
+        var outList = new List<CommandElementBase>();
         var childCount = transform.childCount;
 
         for (int i = 0; i < childCount; i++)
@@ -72,7 +105,7 @@ public class LoopCommandElement : CommandElementBase
             if(ceb == null)
                 continue;
             
-            outList.Add(ceb.GenerateCommand());
+            outList.Add(ceb);
         }
 
         return outList;

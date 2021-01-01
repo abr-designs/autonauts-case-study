@@ -18,6 +18,12 @@ public class UIManager : MonoBehaviour
 
     //====================================================================================================================//
 
+    [SerializeField]
+    private Button generateCommandsButton;
+
+    [SerializeField]
+    private RectTransform codeContainerTransform;
+
     public DragController DragController
     {
         get
@@ -32,112 +38,52 @@ public class UIManager : MonoBehaviour
 
     private new Transform transform;
 
+    //Unity Functions
+    //====================================================================================================================//
+
     private void Start()
     {
         transform = gameObject.transform;
+
+        InitButtons();
     }
 
-    /*// Dragging
     //====================================================================================================================//
 
-    public bool isDragging { get; private set; }
-    private RectTransform _dragging;
-
-    [SerializeField]
-    private RectTransform placementPreviewTransform;
-
-    public void OnDragStarted(RectTransform dragging)
+    private void InitButtons()
     {
-        _dragging = dragging;
-        isDragging = true;
-        
-        _dragging.SetParent(transform);
-
-        ForceUpdateLayouts();
-        UpdateCommandList();
-        placementPreviewTransform.gameObject.SetActive(true);
-        
-    }
-
-    public void OnDrag(Vector2 mousePosition)
-    {
-        if (!isDragging)
-            return;
-        
-        _dragging.position = mousePosition;
-
-        var previewPos = FindClosestPreviewLocation(mousePosition);
-        placementPreviewTransform.position = previewPos;
-    }
-
-    public void OnDragCompleted()
-    {
-        _dragging = null;
-        isDragging = false;
-        placementPreviewTransform.gameObject.SetActive(false);
-    }
-
-    [SerializeField]
-    private List<CommandElementBase> _commandElementBases;
-
-    [SerializeField]
-    private List<Vector2> previewPositions;
-
-    public Vector2 currentPos;
-    private void UpdateCommandList()
-    {
-        previewPositions = new List<Vector2>();
-        _commandElementBases = GetComponentsInChildren<CommandElementBase>().Where(x => x.transform != _dragging).ToList();
-        
-        UpdatePositionList();
-    }
-
-    private void UpdatePositionList()
-    {
-        foreach (var elementBase in _commandElementBases)
+        generateCommandsButton.onClick.AddListener(() =>
         {
-            var pos = elementBase.transform.position;
-            previewPositions.Add(pos);
+            GenerateCodeUI();
+            //var commands = GenerateCode();
+        });
+    }
 
-            //Add the loop interior position
-            if (!(elementBase is LoopCommandElement)) 
+    private void GenerateCodeUI()
+    {
+        var testBot = FindObjectOfType<TestBot>();
+        
+        CommandElementFactory.Instance.GenerateCodeIn(codeContainerTransform, testBot.Command);
+    }
+
+    private IEnumerable<ICommand> GenerateCode()
+    {
+        var childCount = codeContainerTransform.childCount;
+        var commandElements = new List<CommandElementBase>();
+
+        for (int i = 0; i < childCount; i++)
+        {
+            var ceb = codeContainerTransform.GetChild(i).GetComponent<CommandElementBase>();
+
+            if (ceb is null)
                 continue;
             
-            var offset = elementBase.transform.sizeDelta.y / 2f;
-            var loopPos = new Vector2(offset, -offset);
-            previewPositions.Add(elementBase.transform.TransformPoint(loopPos));
+            commandElements.Add(ceb);
         }
 
-        //Add the position at the bottom of the list
-        var last = _commandElementBases[_commandElementBases.Count - 1].transform;
-        var localPos = (Vector3) (last.sizeDelta * Vector3.down);
-        
-        previewPositions.Add(last.TransformPoint(localPos));
+        return commandElements.Count == 0 ? null : commandElements.Select(commandElementBase => commandElementBase.GenerateCommand());
     }
-
-    private Vector2 FindClosestPreviewLocation(Vector2 pos)
-    {
-        var y = pos.y;
-        var shortestDist = 999f;
-        var closestPos = Vector2.zero;
-
-        foreach (var previewPosition in previewPositions)
-        {
-            var dist = Mathf.Abs(y - previewPosition.y);
-            if(dist >= shortestDist)
-                continue;
-
-            shortestDist = dist;
-            closestPos = previewPosition;
-        }
-
-        currentPos = closestPos;
-
-        return closestPos;
-    }*/
-
-    //====================================================================================================================//
-
+    
     public static void ForceUpdateLayouts()
     {
         var layouts = Instance.GetComponentsInChildren<LayoutGroup>();

@@ -21,8 +21,10 @@ public class TestBot : MonoBehaviour, IStoreTarget, IConditional
     
     public Transform testTarget3;
 
+    public ICommand[] Command => _command;
     //The stored code will likely always need to be a collection
-    private ICommand _command;
+    private ICommand[] _command;
+    private int currentIndex;
 
     public float speed = 5f;
 
@@ -31,19 +33,22 @@ public class TestBot : MonoBehaviour, IStoreTarget, IConditional
     private void Start()
     {
         transform = gameObject.transform;
-        _command = new InfiniteLoopCommand(new ICommand[]
+        _command = new ICommand[]
         {
-            new ConditionalLoopCommand(new ICommand[]
+            new InfiniteLoopCommand(new ICommand[]
             {
-                new SearchCommand(transform, this, ObjectManager, new Vector3(-19.7f, 0, 9.3f), 10f),
-                new MoveToStoredTargetCommand(transform, this, speed),
-                new InteractableCommand(transform, this, this)
-                
-            }, this, CONDITION.HANDS_FULL),
-            
-            new MoveCommand(transform, testTarget2, speed),
-            
-        });
+                new ConditionalLoopCommand(new ICommand[]
+                {
+                    new SearchCommand(transform, this, ObjectManager, new Vector3(-19.7f, 0, 9.3f), 10f),
+                    new MoveToStoredTargetCommand(transform, this, speed),
+                    new InteractableCommand(transform, this, this)
+
+                }, this, CONDITION.HANDS_FULL),
+
+                new MoveCommand(transform, testTarget2, speed),
+
+            })
+        };
 
         /*_command = new InfiniteLoopCommand(new ICommand[]
         {
@@ -61,7 +66,12 @@ public class TestBot : MonoBehaviour, IStoreTarget, IConditional
 
     public void Update()
     {
-        _command?.MoveNext();
+        if (!_command[currentIndex].MoveNext())
+            return;
+        
+        if (currentIndex + 1 >= _command.Length)
+            currentIndex = 0;
+        else currentIndex++;
     }
 
     //====================================================================================================================//

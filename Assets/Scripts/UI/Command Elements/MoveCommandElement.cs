@@ -14,8 +14,4 @@ public class MoveCommandElement : CommandElementBase
         return new MoveToStoredTargetCommand(testBot.transform, testBot, testBot.speed);
     }
 
-    public override CommandElementBase GetParentGroup()
-    {
-        throw new System.NotImplementedException();
-    }
 }
