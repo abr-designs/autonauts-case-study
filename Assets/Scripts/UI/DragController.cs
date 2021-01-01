@@ -20,6 +20,23 @@ public class DragController : MonoBehaviour
         
         public Transform siblingTransform;
         public DIR direction;
+
+        public void SetSibling(in Transform transform)
+        {
+            transform.SetParent(siblingTransform.parent);
+
+            var siblingIndex = siblingTransform.GetSiblingIndex();
+            
+            switch (direction)
+            {
+                case DIR.ABOVE:
+                    transform.SetSiblingIndex(siblingIndex);
+                    break;
+                case DIR.BELOW:
+                    transform.SetSiblingIndex(siblingIndex + 1);
+                    break;
+            }
+        }
     }
 
     //====================================================================================================================//
@@ -77,17 +94,7 @@ public class DragController : MonoBehaviour
 
     public void OnDragCompleted()
     {
-        _dragging.SetParent(_currentMoveData.siblingTransform.parent);
-        switch (_currentMoveData.direction)
-        {
-            case MoveData.DIR.ABOVE:
-                _dragging.SetSiblingIndex(_currentMoveData.siblingTransform.GetSiblingIndex() - 1);
-                break;
-            case MoveData.DIR.BELOW:
-                _dragging.SetSiblingIndex(_currentMoveData.siblingTransform.GetSiblingIndex() + 1);
-                break;
-        }
-
+        _currentMoveData.SetSibling(_dragging);
         
         _dragging = null;
         isDragging = false;
