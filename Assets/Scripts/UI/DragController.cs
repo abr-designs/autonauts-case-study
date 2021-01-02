@@ -17,12 +17,19 @@ public class DragController : MonoBehaviour
         }
 
         public Vector2 previewPosition;
-        
+
+        public Transform parent;
         public Transform siblingTransform;
         public DIR direction;
 
         public void SetSibling(in Transform transform)
         {
+            if (direction == DIR.NONE)
+            {
+                transform.SetParent(parent);
+                return;
+            }
+            
             transform.SetParent(siblingTransform.parent);
 
             var siblingIndex = siblingTransform.GetSiblingIndex();
@@ -52,6 +59,9 @@ public class DragController : MonoBehaviour
 
     [SerializeField]
     private RectTransform placementPreviewTransform;
+
+    [SerializeField]
+    private RectTransform codeSectionRectTransform;
     
     //[SerializeField]
     private List<CommandElementBase> _commandElementBases;
@@ -137,6 +147,18 @@ public class DragController : MonoBehaviour
 
     private void UpdatePositionList()
     {
+        if (_commandElementBases.Count == 0)
+        {
+            _previewData.Add(new MoveData
+            {
+                previewPosition = codeSectionRectTransform.position,
+                direction = MoveData.DIR.NONE,
+                parent = codeSectionRectTransform
+            });
+            
+            return;
+        }
+        
         foreach (var elementBase in _commandElementBases)
         {
             var pos = elementBase.transform.position;
@@ -211,7 +233,7 @@ public class DragController : MonoBehaviour
         _previewData.Add(new MoveData
         {
             previewPosition = loopTrans.TransformPoint(loopPos),
-            siblingTransform = null,
+            parent = loopTrans,
             direction = MoveData.DIR.NONE
         });
 

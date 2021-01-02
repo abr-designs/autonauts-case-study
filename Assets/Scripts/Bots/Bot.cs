@@ -17,7 +17,7 @@ public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPa
     //ICanPause Properties
     //====================================================================================================================//
 
-    public bool IsPaused { get; private set; }
+    public bool IsPaused { get; private set; } = true;
 
     //IStoreTarget Properties
     //====================================================================================================================//

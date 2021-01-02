@@ -29,8 +29,23 @@ public class UIManager : MonoBehaviour
     private Button closeCodeWindowButton;
     [SerializeField]
     private RectTransform codeContainerTransform;
+
+    [SerializeField] private GameObject fadeImageObject;
     //====================================================================================================================//
 
+    [SerializeField, Space(10f)]
+    private Button recordButton;
+    [SerializeField]
+    private Button playButton;
+
+    private TMP_Text _playButtonText;
+    [SerializeField]
+    private Button stopButton;
+    [SerializeField]
+    private Button repeatButton;
+    
+    //====================================================================================================================//
+    
     public DragController DragController
     {
         get
@@ -42,8 +57,23 @@ public class UIManager : MonoBehaviour
         }
     }
     private DragController _dragController;
+    
+    public ActionRecorder ActionRecorder
+    {
+        get
+        {
+            if (_actionRecorder == null)
+                _actionRecorder = GetComponent<ActionRecorder>();
+
+            return _actionRecorder;
+        }
+    }
+    private ActionRecorder _actionRecorder;
 
     private new Transform transform;
+    
+    public Bot selectedBot { get; private set; }
+
 
     //Unity Functions
     //====================================================================================================================//
@@ -53,13 +83,19 @@ public class UIManager : MonoBehaviour
         transform = gameObject.transform;
 
         InitButtons();
+        ActionRecorder.InitButtons(recordButton, fadeImageObject);
         SetCodeWindowActive(false, null);
     }
 
     //====================================================================================================================//
 
-    public Bot selectedBot { get; private set; }
-
+    private void UpdateButtons(bool botIsPaused)
+    {
+        recordButton.interactable = botIsPaused;
+        playButton.interactable = botIsPaused;
+        stopButton.interactable = !botIsPaused;
+    }
+    
     public void SetCodeWindowActive(bool state, Bot bot)
     {
         codeWindow.SetActive(state);
@@ -75,15 +111,34 @@ public class UIManager : MonoBehaviour
 
         nameInputField.text = bot.name;
         GenerateCodeUI();
+
+        UpdateButtons(selectedBot.IsPaused);
+        repeatButton.interactable = false;
     }
 
     private void InitButtons()
     {
-        /*generateCommandsButton.onClick.AddListener(() =>
+        recordButton.onClick.AddListener(()=>
         {
-            GenerateCodeUI();
-            //var commands = GenerateCode();
-        });*/
+            ActionRecorder.ToggleIsRecording();
+            playButton.interactable = !ActionRecorder.IsRecording;
+            repeatButton.interactable = ActionRecorder.IsRecording;
+
+        });
+        _playButtonText = playButton.GetComponentInChildren<TMP_Text>();
+        playButton.onClick.AddListener(() =>
+        {
+            selectedBot.SetPaused(false);
+            UpdateButtons(selectedBot.IsPaused);
+            repeatButton.interactable = false;
+        });
+        stopButton.onClick.AddListener(() =>
+        {
+            selectedBot.SetPaused(true);
+            UpdateButtons(selectedBot.IsPaused);
+            repeatButton.interactable = true;
+        });
+        
         
         nameInputField.onValueChanged.AddListener(SetBotName);
         
@@ -92,9 +147,35 @@ public class UIManager : MonoBehaviour
         {
             SetCodeWindowActive(false, null);
         });
+        
+        repeatButton.onClick.AddListener(WrapWithRepeat);
     }
 
     //====================================================================================================================//
+
+    private void WrapWithRepeat()
+    {
+        var commands = new List<ICommand>();
+        for (var i = 0; i < codeContainerTransform.childCount; i++)
+        {
+            var child = codeContainerTransform.GetChild(i).GetComponent<CommandElementBase>();
+            
+            if(child is null)
+                continue;
+                
+            commands.Add(child.GenerateCommand());
+            Destroy(child.gameObject);
+        }
+
+        CommandElementFactory.Instance.GenerateCodeIn(codeContainerTransform, 
+            new ICommand[]
+        {
+            new InfiniteLoopCommand(commands)
+        });
+    }
+    
+    //====================================================================================================================//
+    
 
     private void ClearCodeUI()
     {
@@ -139,8 +220,6 @@ public class UIManager : MonoBehaviour
 
     //====================================================================================================================//
     
-    
-    
     public static void ForceUpdateLayouts()
     {
         var layouts = Instance.GetComponentsInChildren<LayoutGroup>();
@@ -150,4 +229,7 @@ public class UIManager : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup.transform as RectTransform);
         }
     }
+
+    //====================================================================================================================//
+    
 }

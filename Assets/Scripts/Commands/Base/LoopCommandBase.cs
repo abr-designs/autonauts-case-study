@@ -12,7 +12,7 @@ public abstract class LoopCommandBase
     
     public LoopCommandBase(IEnumerable<ICommand> internalCommands)
     {
-        _internalCommands = internalCommands.ToArray();
+        _internalCommands = internalCommands?.ToArray();
         _currentIndex = 0;
     }
 }

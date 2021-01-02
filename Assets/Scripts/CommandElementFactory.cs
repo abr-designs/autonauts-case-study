@@ -36,7 +36,8 @@ public class CommandElementFactory : MonoBehaviour
         
         foreach (var command in commands)
         {
-            switch (command)
+            GenerateCommandElement(rectTransform, command);
+            /*switch (command)
             {
                 case LoopCommandBase loopCommandBase:
                     var loop = Instantiate(loopCommandElement, rectTransform);
@@ -65,7 +66,47 @@ public class CommandElementFactory : MonoBehaviour
                 default:
                     throw new ArgumentOutOfRangeException(nameof(command), command, null);
 
-            }
+            }*/
+        }
+    }
+    
+    public CommandElementBase GenerateCommandElement(in RectTransform rectTransform, ICommand command)
+    {
+        if (command == null)
+            return null;
+        
+        switch (command)
+        {
+            case LoopCommandBase loopCommandBase:
+                var loop = Instantiate(loopCommandElement, rectTransform);
+                loop.transform.pivot = new Vector2(0, 1);
+                loop.Init(loopCommandBase);
+                    
+                GenerateCodeIn(loop.transform, loopCommandBase.InternalCommands);
+                return loop;
+            case InteractableCommand interactableCommand:
+                var interactable = Instantiate(interactCommandElement, rectTransform);
+                interactable.transform.pivot = new Vector2(0, 1);
+                return interactable;
+                
+            case MoveCommand moveCommand:
+                var move = Instantiate(moveCommandElement, rectTransform);
+                move.transform.pivot = new Vector2(0, 1);
+                return move;
+            
+            case MoveToStoredTargetCommand moveCommand:
+                var moveToTarget = Instantiate(moveCommandElement, rectTransform);
+                moveToTarget.transform.pivot = new Vector2(0, 1);
+                return moveToTarget;
+            
+            case SearchCommand searchCommand:
+                var search = Instantiate(searchCommandElement, rectTransform);
+                search.transform.pivot = new Vector2(0, 1);
+                return search;
+            
+            default:
+                throw new ArgumentOutOfRangeException(nameof(command), command, null);
+
         }
     }
 }
