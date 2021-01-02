@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestBot : MonoBehaviour, IStoreTarget, IConditional
+[Obsolete]
+public class TestBot : MonoBehaviour//, IStoreTarget, IConditional
 {
-    [SerializeField]
+    /*[SerializeField]
     private int heldItems;
     private int itemCapacity = 4;
     
@@ -61,7 +62,7 @@ public class TestBot : MonoBehaviour, IStoreTarget, IConditional
             new SearchCommand(transform, this, ObjectManager, new Vector3(-19.7f, 0, 9.3f), 10f),
             new MoveToStoredTargetCommand(transform, this, speed),
             new InteractableCommand(transform, this, this)
-        });*/
+        });#1#
     }
 
     public void Update()
@@ -99,5 +100,5 @@ public class TestBot : MonoBehaviour, IStoreTarget, IConditional
             default:
                 throw new ArgumentOutOfRangeException(nameof(condition), condition, null);
         }
-    }
+    }*/
 }

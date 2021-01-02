@@ -39,6 +39,45 @@ public class MoveCommand : ICommand
         throw new System.NotImplementedException();
     }
 }
+public class MoveToPositionCommand : ICommand
+{
+    private readonly Transform _moving;
+    
+    private readonly Vector3 _target;
+    private readonly float _speed;
+    
+    public MoveToPositionCommand(Transform moving, Vector3 target, float speed)
+    {
+        _moving = moving;
+        
+        _target = target;
+
+        _speed = speed;
+    }
+    
+    public bool MoveNext()
+    {
+        var currentPosition = _moving.position;
+        //var targetPosition = _target.position;
+
+        if (Vector3.Distance(currentPosition, _target) <= 0.5)
+            return true;
+
+        Debug.DrawLine(currentPosition, _target, Color.green);
+        
+        
+        currentPosition = Vector3.MoveTowards(currentPosition, _target, _speed * Time.deltaTime);
+        
+        _moving.position = currentPosition;
+
+        return false;
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
+}
 public class MoveToStoredTargetCommand : TargetCommandBase
 {
     private readonly float _speed;

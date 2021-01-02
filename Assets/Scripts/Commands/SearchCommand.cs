@@ -1,23 +1,29 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 //FIXME This needs to store a reference, but also be able to be called using regular MoveNext
 public class SearchCommand : TargetCommandBase
 {
-    private readonly ObjectManager _objectManager;
+    private static ObjectManager _objectManager;
+    
+    private readonly ItemData _itemData;
     private readonly Vector3 _searchLocation;
     private readonly float _radius;
     
-    public SearchCommand(Transform moving, IStoreTarget iStoreTarget, ObjectManager objectManager, Vector3 searchLocation, float searchRadius) : base (moving, iStoreTarget)
+    public SearchCommand(Transform moving, IStoreTarget iStoreTarget, ItemData itemData, Vector3 searchLocation, float searchRadius) : base (moving, iStoreTarget)
     {
+        if(!_objectManager)
+            _objectManager = Object.FindObjectOfType<ObjectManager>();
+        
         _searchLocation = searchLocation;
         _radius = searchRadius;
-        _objectManager = objectManager;
+        _itemData = itemData;
     }
     
     public override bool MoveNext()
     {
-        var objects = _objectManager.objects.ToArray();
+        var objects = _objectManager.Items.Where(x => x.ItemData.Equals(_itemData)).ToArray();
 
         if (objects.Length <= 0)
             return false;

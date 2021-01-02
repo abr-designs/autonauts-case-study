@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CommandElementFactory : MonoBehaviour
@@ -30,6 +31,9 @@ public class CommandElementFactory : MonoBehaviour
 
     public void GenerateCodeIn(in RectTransform rectTransform, IEnumerable<ICommand> commands)
     {
+        if (commands == null || !commands.Any())
+            return;
+        
         foreach (var command in commands)
         {
             switch (command)

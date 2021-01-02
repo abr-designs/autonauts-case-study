@@ -125,7 +125,7 @@ public class LoopCommandElement : CommandElementBase
             //Conditional
             default:
                 return new ConditionalLoopCommand(internalCommands, 
-                    FindObjectOfType<TestBot>(),
+                    UIManager.Instance.selectedBot,
                     (CONDITION)typeDropdown.value - 2);
         }
     }

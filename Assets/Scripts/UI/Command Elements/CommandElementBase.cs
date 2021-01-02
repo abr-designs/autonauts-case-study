@@ -21,7 +21,6 @@ public abstract class CommandElementBase : MonoBehaviour, IPointerEnterHandler, 
     }
 
     //====================================================================================================================//
-    
     public abstract ICommand GenerateCommand();
 
     public CommandElementBase GetParentGroup()

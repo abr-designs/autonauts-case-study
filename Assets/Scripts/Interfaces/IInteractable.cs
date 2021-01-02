@@ -5,5 +5,5 @@ public interface IInteractable
     public Transform transform { get;}
     public GameObject gameObject { get;}
     
-    void Interact(in TestBot testBot);
+    void Interact(in ITransferItem iTransferItem);
 }

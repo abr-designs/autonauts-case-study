@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,10 +20,16 @@ public class UIManager : MonoBehaviour
     //====================================================================================================================//
 
     [SerializeField]
-    private Button generateCommandsButton;
-
+    private GameObject codeWindow;
+    /*[SerializeField]
+    private Button generateCommandsButton;*/
+    [SerializeField]
+    private TMP_InputField nameInputField;
+    [SerializeField]
+    private Button closeCodeWindowButton;
     [SerializeField]
     private RectTransform codeContainerTransform;
+    //====================================================================================================================//
 
     public DragController DragController
     {
@@ -46,24 +53,63 @@ public class UIManager : MonoBehaviour
         transform = gameObject.transform;
 
         InitButtons();
+        SetCodeWindowActive(false, null);
     }
 
     //====================================================================================================================//
 
+    public Bot selectedBot { get; private set; }
+
+    public void SetCodeWindowActive(bool state, Bot bot)
+    {
+        codeWindow.SetActive(state);
+        
+        if (!state)
+        {
+            ClearCodeUI();
+            selectedBot = null;
+            return;
+        }
+        selectedBot = bot;
+
+
+        nameInputField.text = bot.name;
+        GenerateCodeUI();
+    }
+
     private void InitButtons()
     {
-        generateCommandsButton.onClick.AddListener(() =>
+        /*generateCommandsButton.onClick.AddListener(() =>
         {
             GenerateCodeUI();
             //var commands = GenerateCode();
+        });*/
+        
+        nameInputField.onValueChanged.AddListener(SetBotName);
+        
+        
+        closeCodeWindowButton.onClick.AddListener(() =>
+        {
+            SetCodeWindowActive(false, null);
         });
     }
 
+    //====================================================================================================================//
+
+    private void ClearCodeUI()
+    {
+        while (codeContainerTransform.childCount > 0)
+        {
+            var temp = codeContainerTransform.GetChild(0);
+            Destroy(temp.gameObject);
+        }
+    }
+
+    //====================================================================================================================//
+    
     private void GenerateCodeUI()
     {
-        var testBot = FindObjectOfType<TestBot>();
-        
-        CommandElementFactory.Instance.GenerateCodeIn(codeContainerTransform, testBot.Command);
+        CommandElementFactory.Instance.GenerateCodeIn(codeContainerTransform, selectedBot.Command);
     }
 
     private IEnumerable<ICommand> GenerateCode()
@@ -83,6 +129,17 @@ public class UIManager : MonoBehaviour
 
         return commandElements.Count == 0 ? null : commandElements.Select(commandElementBase => commandElementBase.GenerateCommand());
     }
+
+    //====================================================================================================================//
+
+    private void SetBotName(string newName)
+    {
+        selectedBot.name = newName;
+    }
+
+    //====================================================================================================================//
+    
+    
     
     public static void ForceUpdateLayouts()
     {

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
-    public List<InteractableBase> objects;
+    public List<Item> Items;
 }
