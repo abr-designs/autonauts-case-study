@@ -30,6 +30,8 @@ public class InfiniteLoopCommand :LoopCommandBase, ICommand
 
 public class FixedLoopCommand : LoopCommandBase, ICommand
 {
+    public int Count => _count;
+
     private int _currentCount;
     private readonly int _count;
     
@@ -75,6 +77,8 @@ public class FixedLoopCommand : LoopCommandBase, ICommand
 
 public class ConditionalLoopCommand :LoopCommandBase, ICommand
 {
+    public CONDITION Condition => _condition;
+
     private readonly IConditional _iConditional;
     private readonly CONDITION _condition;
     public ConditionalLoopCommand(IEnumerable<ICommand> internalCommands, IConditional iConditional, CONDITION condition) : base (internalCommands)

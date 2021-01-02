@@ -79,6 +79,7 @@ public class DragController : MonoBehaviour
         isDragging = true;
         
         _dragging.SetParent(transform);
+        SetCommandElementDragging(_dragging, isDragging);
 
         UIManager.ForceUpdateLayouts();
         UpdateCommandList();
@@ -102,6 +103,7 @@ public class DragController : MonoBehaviour
     public void OnDragCompleted()
     {
         ResetColor(_dragging);
+        SetCommandElementDragging(_dragging, isDragging);
         _currentMoveData.SetSibling(_dragging);
         
         
@@ -111,6 +113,15 @@ public class DragController : MonoBehaviour
         
         UIManager.ForceUpdateLayouts();
         
+    }
+
+    private void SetCommandElementDragging(in Transform target, bool isDragging)
+    {
+        var temps = target.GetComponentsInChildren<CommandElementBase>();
+        foreach (var commandElementBase in temps)
+        {
+            commandElementBase.isDragging = isDragging;
+        }
     }
 
     //Calculation Functions

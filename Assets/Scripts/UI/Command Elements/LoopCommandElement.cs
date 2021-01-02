@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,9 +6,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public class LoopCommandElement : CommandElementBase
 {
+    public enum TYPE
+    {
+        INFINITE,
+        COUNT,
+        CONDITIONAL
+    }
     [SerializeField]
     private TMP_Dropdown typeDropdown;
 
@@ -19,15 +27,57 @@ public class LoopCommandElement : CommandElementBase
     
     [SerializeField]
     private Toggle escapeToggle;
+
+    private GameObject _target;
     
-    // Start is called before the first frame update
-    private void Start()
+    //Setup of Loop
+    //====================================================================================================================//
+
+    public void Init(LoopCommandBase loopCommandBase)
     {
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(GetOptionsText(null));
         typeDropdown.onValueChanged.AddListener(OnDropdownChanged);
+        
+        switch (loopCommandBase)
+        {
+            case InfiniteLoopCommand _ :
+                SetLoopType(TYPE.INFINITE);
+                break;
+            case FixedLoopCommand fixedLoopCommand:
+                SetLoopType(TYPE.COUNT);
+                numberInputField.text = fixedLoopCommand.Count.ToString();
+                break;
+            case ConditionalLoopCommand conditionalLoopCommand:
+                SetLoopType(TYPE.CONDITIONAL, conditionalLoopCommand.Condition);
+                break;
+        }
+    }
 
-        OnDropdownChanged(0);
+    private void SetTarget(GameObject target)
+    {
+        _target = target;
+        OnTargetChanged();
+    }
+    
+    private void SetLoopType(TYPE loopType, CONDITION conditional = CONDITION.HANDS_FULL)
+    {
+        switch (loopType)
+        {
+            case TYPE.INFINITE:
+            case TYPE.COUNT:
+                typeDropdown.value = (int)loopType;
+                break;
+            case TYPE.CONDITIONAL:
+                typeDropdown.value = (int)loopType + (int)conditional;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(loopType), loopType, null);
+        }
+        typeDropdown.Select();
+        typeDropdown.RefreshShownValue();
+        OnDropdownChanged(typeDropdown.value);
+
     }
 
     //====================================================================================================================//
@@ -114,27 +164,37 @@ public class LoopCommandElement : CommandElementBase
     //====================================================================================================================//
     
 
+
+    //====================================================================================================================//
+    
+
     private void OnTargetChanged()
     {
+        var current = typeDropdown.value;
         
+        typeDropdown.ClearOptions();
+        typeDropdown.AddOptions(GetOptionsText(_target));
+
+        typeDropdown.value = current;
+        typeDropdown.onValueChanged?.Invoke(current);
     }
     private void OnDropdownChanged(int value)
     {
         switch (value)
         {
-            case 0:
+            case 0://Forever
                 SetObjectsActive(false, false, true);
                 break;
-            case 1:
+            case 1://Count
                 SetObjectsActive(true, false, true);
                 break;
-            case 2:
+            case 2://Conditional Hands
             case 3:
             case 4:
             case 5:
                 SetObjectsActive(false, false, true);
                 break;
-            case 6:
+            case 6://Conditional Buildings
             case 7:
             case 8:
             case 9:

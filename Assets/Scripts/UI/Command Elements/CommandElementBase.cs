@@ -10,6 +10,8 @@ public abstract class CommandElementBase : MonoBehaviour, IPointerEnterHandler, 
     protected Image image;
     protected Color StartingColor;
 
+    public bool isDragging;
+
     protected void Awake()
     {
         transform = gameObject.transform as RectTransform;
@@ -32,18 +34,23 @@ public abstract class CommandElementBase : MonoBehaviour, IPointerEnterHandler, 
     
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
+        if (isDragging) return;
         DarkenColor();
         GetParentGroup()?.DarkenColor();
     }
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
+        if (isDragging) return;
+        
         ResetColor();
         GetParentGroup()?.ResetColor();
     }
     
     public virtual void OnPointerDown(PointerEventData eventData)
     {
+        if (isDragging) return;
+        
         if (eventData.button != PointerEventData.InputButton.Right) 
             return;
         

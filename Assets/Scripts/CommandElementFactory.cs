@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,20 +36,27 @@ public class CommandElementFactory : MonoBehaviour
             {
                 case LoopCommandBase loopCommandBase:
                     var loop = Instantiate(loopCommandElement, rectTransform);
+                    loop.transform.pivot = new Vector2(0, 1);
+                    loop.Init(loopCommandBase);
+                    
                     GenerateCodeIn(loop.transform, loopCommandBase.InternalCommands);
                     break;
                 case InteractableCommand interactableCommand:
                     var interactable = Instantiate(interactCommandElement, rectTransform);
+                    interactable.transform.pivot = new Vector2(0, 1);
                     break;
                 
                 case MoveCommand moveCommand:
                     var move = Instantiate(moveCommandElement, rectTransform);
+                    move.transform.pivot = new Vector2(0, 1);
                     break;
                 case MoveToStoredTargetCommand moveCommand:
                     var moveToTarget = Instantiate(moveCommandElement, rectTransform);
+                    moveToTarget.transform.pivot = new Vector2(0, 1);
                     break;
                 case SearchCommand searchCommand:
                     var search = Instantiate(searchCommandElement, rectTransform);
+                    search.transform.pivot = new Vector2(0, 1);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(command), command, null);
