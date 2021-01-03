@@ -48,7 +48,10 @@ public class SearchCommandElement : CommandElementBase
         //var testBot = FindObjectOfType<TestBot>();
         var bot = UIManager.Instance.selectedBot;
         
-        return new SearchCommand(bot.transform, bot, _itemData, _location, _radius);
+        return new SearchCommand(bot.transform, bot, _itemData, _location, _radius)
+        {
+            ID = ID
+        };
     }
 
     

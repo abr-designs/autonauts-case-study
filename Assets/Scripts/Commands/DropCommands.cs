@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DropCommand : ICommand
 {
+    public int ID { get; set; }
+
     private readonly ITransferItem _iTransferItem;
 
     public DropCommand(ITransferItem iTransferItem)
@@ -11,8 +13,11 @@ public class DropCommand : ICommand
         _iTransferItem = iTransferItem;
     }
 
+
     public bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         //TODO Get items to drop
        var toDrop =  _iTransferItem.DropItems();
        

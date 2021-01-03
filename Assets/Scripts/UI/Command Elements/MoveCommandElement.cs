@@ -40,17 +40,26 @@ public class MoveCommandElement : CommandElementBase
 
         if (_targetInteractable != null)
         {
-            return new StoreAndMoveToStoredTargetCommand(bot.transform, bot, _targetInteractable, bot.Speed);
+            return new StoreAndMoveToStoredTargetCommand(bot.transform, bot, _targetInteractable, bot.Speed)
+            {
+                ID = ID
+            };
         }
 
         if (!string.IsNullOrEmpty(_targetName))
         {
-            return new MoveToStoredTargetCommand(bot.transform, bot, bot.Speed, _targetName);
+            return new MoveToStoredTargetCommand(bot.transform, bot, bot.Speed, _targetName)
+            {
+                ID = ID
+            };
         }
 
         if (storedPosition != Vector3.zero)
         {
-            return new MoveToPositionCommand(bot.transform, storedPosition, bot.Speed);
+            return new MoveToPositionCommand(bot.transform, storedPosition, bot.Speed)
+            {
+                ID = ID
+            };
         }
 
         throw new ArgumentOutOfRangeException();

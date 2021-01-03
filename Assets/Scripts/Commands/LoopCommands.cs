@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class InfiniteLoopCommand :LoopCommandBase, ICommand
 {
+    public int ID { get; set; }
+
     public InfiniteLoopCommand(IEnumerable<ICommand> internalCommands) : base (internalCommands)
     {
     }
@@ -30,6 +32,8 @@ public class InfiniteLoopCommand :LoopCommandBase, ICommand
 
 public class FixedLoopCommand : LoopCommandBase, ICommand
 {
+    public int ID { get; set; }
+
     public int Count => _count;
 
     private int _currentCount;
@@ -77,6 +81,8 @@ public class FixedLoopCommand : LoopCommandBase, ICommand
 
 public class ConditionalLoopCommand :LoopCommandBase, ICommand
 {
+    public int ID { get; set; }
+
     public CONDITION Condition => _condition;
 
     private readonly IConditional _iConditional;
@@ -87,6 +93,8 @@ public class ConditionalLoopCommand :LoopCommandBase, ICommand
         _condition = condition;
 
     }
+
+
     public bool MoveNext()
     {
         if (_iConditional.MeetsCondition(_condition))

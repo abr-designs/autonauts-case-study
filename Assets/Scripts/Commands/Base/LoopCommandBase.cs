@@ -5,6 +5,8 @@ using UnityEngine;
 
 public abstract class LoopCommandBase
 {
+    public int ID { get; set; }
+
     public ICommand[] InternalCommands => _internalCommands;
 
     protected readonly ICommand[] _internalCommands;

@@ -28,6 +28,8 @@ public class SearchCommand : TargetCommandBase
     
     public override bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         var objects = _objectManager.Items.Where(x => x.ItemData.Equals(_itemData)).ToArray();
 
         if (objects.Length <= 0)

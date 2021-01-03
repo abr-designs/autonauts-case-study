@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class TargetCommandBase : ICommand
 {
+    public int ID { get; set; }
+
     public IInteractable StoredTarget => IStoreTarget?.StoredTarget;
 
     protected readonly Transform Moving;

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -118,15 +117,24 @@ public class LoopCommandElement : CommandElementBase
         {
             //Forever
             case  0:
-                return new InfiniteLoopCommand(internalCommands);
+                return new InfiniteLoopCommand(internalCommands)
+                {
+                    ID = ID
+                };
             //Count
             case  1:
-                return new FixedLoopCommand(internalCommands, int.Parse(numberInputField.text));
+                return new FixedLoopCommand(internalCommands, int.Parse(numberInputField.text))
+                {
+                    ID = ID
+                };
             //Conditional
             default:
                 return new ConditionalLoopCommand(internalCommands, 
                     UIManager.Instance.selectedBot,
-                    (CONDITION)typeDropdown.value - 2);
+                    (CONDITION)typeDropdown.value - 2)
+                {
+                    ID = ID
+                };
         }
     }
 

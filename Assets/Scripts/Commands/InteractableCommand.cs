@@ -29,6 +29,8 @@ public class InteractableCommand : TargetCommandBase
 
     public override bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         if (IStoreTarget.StoredTarget is null)
             return false;
 

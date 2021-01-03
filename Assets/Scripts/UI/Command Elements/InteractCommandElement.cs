@@ -35,6 +35,9 @@ public class InteractCommandElement : CommandElementBase
     public override ICommand GenerateCommand()
     {
         var bot = UIManager.Instance.selectedBot;
-        return new InteractableCommand(bot.transform, bot, _useAlt, bot, _targetName, _type);
+        return new InteractableCommand(bot.transform, bot, _useAlt, bot, _targetName, _type)
+        {
+            ID = ID
+        };
     }
 }

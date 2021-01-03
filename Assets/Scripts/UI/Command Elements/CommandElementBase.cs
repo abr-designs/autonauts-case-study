@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public abstract class CommandElementBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
+    public int ID { get; set; }
     public new RectTransform transform { get; private set; }
 
     protected Image image;

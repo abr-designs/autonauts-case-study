@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class MoveCommand : ICommand
 {
-    
+    public int ID { get; set; }
+
     private readonly Transform _moving;
     
     private readonly Transform _target;
@@ -19,6 +20,8 @@ public class MoveCommand : ICommand
     
     public bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         var currentPosition = _moving.position;
         var targetPosition = _target.position;
 
@@ -42,6 +45,8 @@ public class MoveCommand : ICommand
 }
 public class MoveToPositionCommand : ICommand
 {
+    public int ID { get; set; }
+    
     public Vector3 Target => _target;
 
     private readonly Transform _moving;
@@ -60,6 +65,8 @@ public class MoveToPositionCommand : ICommand
     
     public bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         var currentPosition = _moving.position;
         //var targetPosition = _target.position;
 
@@ -95,6 +102,8 @@ public class MoveToStoredTargetCommand : TargetCommandBase
     
     public override bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         var currentPosition = Moving.position;
         var targetPosition = IStoreTarget.StoredTarget.transform.position;
 
@@ -130,6 +139,8 @@ public class StoreAndMoveToStoredTargetCommand : TargetCommandBase
     
     public override bool MoveNext()
     {
+        UIManager.Instance.HighlightCommandElement(ID);
+        
         var currentPosition = Moving.position;
         var targetPosition = TargetInteractable.transform.position;
 

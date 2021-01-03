@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private GameObject codeWindow;
+    [SerializeField]
+    private RectTransform arrowRectTransform;
     /*[SerializeField]
     private Button generateCommandsButton;*/
     [SerializeField]
@@ -76,6 +78,8 @@ public class UIManager : MonoBehaviour
     private new Transform transform;
     
     public Bot selectedBot { get; private set; }
+    
+    private CommandElementBase[] allCommandElements;
 
 
     //Unity Functions
@@ -85,6 +89,8 @@ public class UIManager : MonoBehaviour
     {
         transform = gameObject.transform;
 
+        arrowRectTransform.gameObject.SetActive(false);
+        
         InitButtons();
         ActionRecorder.InitButtons(recordButton, fadeImageObject);
         SetCodeWindowActive(false, null);
@@ -109,6 +115,7 @@ public class UIManager : MonoBehaviour
             selectedBot = null;
             return;
         }
+        
         selectedBot = bot;
 
 
@@ -117,6 +124,24 @@ public class UIManager : MonoBehaviour
 
         UpdateButtons(selectedBot.IsPaused);
         repeatButton.interactable = false;
+        
+        allCommandElements = codeContainerTransform.GetComponentsInChildren<CommandElementBase>();
+
+    }
+
+    private int _currentID = -1;
+    public void HighlightCommandElement(int id)
+    {
+        if(allCommandElements == null || allCommandElements.Length == 0)
+            return;
+
+        if (id == _currentID)
+            return;
+        
+        _currentID = id;
+
+        var element = allCommandElements.FirstOrDefault(x => x.ID == id);
+        arrowRectTransform.position = element.transform.position + Vector3.down * 30f;
     }
 
     private void InitButtons()
@@ -132,7 +157,8 @@ public class UIManager : MonoBehaviour
                 var newCommands = GenerateCode();
                 selectedBot.SetCommands(newCommands);
             }
-
+            
+            arrowRectTransform.gameObject.SetActive(false);
         });
         _playButtonText = playButton.GetComponentInChildren<TMP_Text>();
         playButton.onClick.AddListener(() =>
@@ -140,12 +166,16 @@ public class UIManager : MonoBehaviour
             selectedBot.SetPaused(false);
             UpdateButtons(selectedBot.IsPaused);
             repeatButton.interactable = false;
+            
+            arrowRectTransform.gameObject.SetActive(true);
         });
         stopButton.onClick.AddListener(() =>
         {
             selectedBot.SetPaused(true);
             UpdateButtons(selectedBot.IsPaused);
             repeatButton.interactable = true;
+            
+            arrowRectTransform.gameObject.SetActive(false);
         });
         
         
@@ -171,7 +201,7 @@ public class UIManager : MonoBehaviour
             
             if(child is null)
                 continue;
-                
+
             commands.Add(child.GenerateCommand());
             Destroy(child.gameObject);
         }
@@ -188,11 +218,15 @@ public class UIManager : MonoBehaviour
 
     private void ClearCodeUI()
     {
-        while (codeContainerTransform.childCount > 0)
+        if (allCommandElements == null || allCommandElements.Length == 0)
+            return;
+        
+        for (int i = allCommandElements.Length - 1; i >= 0; i--)
         {
-            var temp = codeContainerTransform.GetChild(0);
-            Destroy(temp.gameObject);
+            Destroy(allCommandElements[i].gameObject);
         }
+
+        allCommandElements = new CommandElementBase[0];
     }
 
     //====================================================================================================================//
@@ -202,8 +236,15 @@ public class UIManager : MonoBehaviour
         CommandElementFactory.Instance.GenerateCodeIn(codeContainerTransform, selectedBot.Command);
     }
 
+    
     private IEnumerable<ICommand> GenerateCode()
     {
+        allCommandElements = codeContainerTransform.GetComponentsInChildren<CommandElementBase>();
+        for (int i = 0; i < allCommandElements.Length; i++)
+        {
+            allCommandElements[i].ID = i;
+        }
+        
         var childCount = codeContainerTransform.childCount;
         var commandElements = new List<CommandElementBase>();
 
@@ -217,7 +258,10 @@ public class UIManager : MonoBehaviour
             commandElements.Add(ceb);
         }
 
-        return commandElements.Count == 0 ? null : commandElements.Select(commandElementBase => commandElementBase.GenerateCommand());
+        if (commandElements.Count == 0)
+            return null;
+
+        return commandElements.Select(commandElementBase => commandElementBase.GenerateCommand());
     }
 
     //====================================================================================================================//
