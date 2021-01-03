@@ -110,3 +110,36 @@ public class MoveToStoredTargetCommand : TargetCommandBase
         throw new System.NotImplementedException();
     }
 }
+public class StoreAndMoveToStoredTargetCommand : TargetCommandBase
+{
+    private readonly float _speed;
+    
+    public StoreAndMoveToStoredTargetCommand(Transform moving, IStoreTarget iStoreTarget, IInteractable targetInteractable, float speed) : base(moving, iStoreTarget)
+    {
+        _speed = speed;
+        IStoreTarget.StoredTarget = targetInteractable;
+    }
+    
+    public override bool MoveNext()
+    {
+        var currentPosition = Moving.position;
+        var targetPosition = IStoreTarget.StoredTarget.transform.position;
+
+        if (Vector3.Distance(currentPosition, targetPosition) <= 0.5)
+            return true;
+
+        Debug.DrawLine(currentPosition, targetPosition, Color.green);
+        
+        
+        currentPosition = Vector3.MoveTowards(currentPosition, targetPosition, _speed * Time.deltaTime);
+        
+        Moving.position = currentPosition;
+
+        return false;
+    }
+
+    public override void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
+}
