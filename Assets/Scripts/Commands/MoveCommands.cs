@@ -131,10 +131,13 @@ public class StoreAndMoveToStoredTargetCommand : TargetCommandBase
     public override bool MoveNext()
     {
         var currentPosition = Moving.position;
-        var targetPosition = IStoreTarget.StoredTarget.transform.position;
+        var targetPosition = TargetInteractable.transform.position;
 
         if (Vector3.Distance(currentPosition, targetPosition) <= 0.5)
+        {
+            IStoreTarget.StoredTarget = TargetInteractable;
             return true;
+        }
 
         Debug.DrawLine(currentPosition, targetPosition, Color.green);
         

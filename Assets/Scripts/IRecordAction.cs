@@ -1,4 +1,4 @@
 public interface IRecordAction
 {
-    void OnMouseDown();
+    void OnMouseOver();
 }

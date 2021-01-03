@@ -20,17 +20,17 @@ public class Item : MonoBehaviour, IInteractable, IRecordAction
         transform = gameObject.transform;
     }
     
-    public void OnMouseDown()
+    public void OnMouseOver()
     {
         if (!ActionRecorder.CanSelectItems)
             return;
-
-        var selectedBot = UIManager.Instance.selectedBot;
-        var botTransform = selectedBot.transform;
         
         //left click
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
+            var selectedBot = UIManager.Instance.selectedBot;
+            var botTransform = selectedBot.transform;
+            
             //TODO Pick-up Item
             ActionRecorder.RecordActions(new ICommand[]
             {
@@ -50,7 +50,8 @@ public class Item : MonoBehaviour, IInteractable, IRecordAction
     
     public void Interact(in ITransferItem iTransferItem, bool useAlt)
     {
-        iTransferItem.TryPickupItem(itemData);
+        if(iTransferItem.TryPickupItem(itemData))
+            Destroy(gameObject);
     }
 
     //====================================================================================================================//

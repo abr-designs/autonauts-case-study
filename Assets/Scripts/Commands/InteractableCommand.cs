@@ -37,7 +37,6 @@ public class InteractableCommand : TargetCommandBase
         
         //Interact, and clear target
         IStoreTarget.StoredTarget.Interact(_bot, _useAltInteraction);
-        IStoreTarget.StoredTarget = null;
         
         return true;
     }

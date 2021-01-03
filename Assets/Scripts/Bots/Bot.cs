@@ -82,9 +82,12 @@ public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPa
         
         if (!_command[currentIndex].MoveNext())
             return;
-        
+
         if (currentIndex + 1 >= _command.Length)
+        {
             currentIndex = 0;
+            IsPaused = true;
+        }
         else currentIndex++;
     }
 
@@ -119,17 +122,19 @@ public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPa
     //ITransferItem Functions
     //====================================================================================================================//
     
-    public void TryPickupItem(ItemData item)
+    public bool TryPickupItem(ItemData item)
     {
         if (heldItem.HasValue && !heldItem.Value.Name.Equals(item.Name))
-            return;
+            return false;
         
         if (heldItems + item.Space > itemCapacity)
-            return;
+            return false;
 
         heldItems += item.Space;
         heldItem = item;
         _itemCount++;
+
+        return true;
     }
 
     public (ItemData? item, int count) DropItems()
@@ -143,6 +148,19 @@ public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPa
         heldItems = 0;
 
         return outData;
+    }
+
+    public ItemData? DropItems(int count)
+    {
+        if (!heldItem.HasValue)
+            return null;
+        
+        if (heldItems < count * heldItem.Value.Space)
+            return null;
+
+        heldItems -= count * heldItem.Value.Space;
+        
+        return heldItem.Value;
     }
 
     //====================================================================================================================//
