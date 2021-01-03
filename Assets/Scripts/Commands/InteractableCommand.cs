@@ -4,14 +4,27 @@ using UnityEngine;
 
 public class InteractableCommand : TargetCommandBase
 {
+    public enum TYPE
+    {
+        ITEM,
+        BUILDING
+    }
+    public string TargetName => _targetName;
+    public bool UseAltInteraction => _useAltInteraction;
+    public TYPE Type => _type;
+
+    private readonly string _targetName;
     private readonly Bot _bot;
     private readonly bool _useAltInteraction;
+    private readonly TYPE _type;
     
     
-    public InteractableCommand(Transform moving, IStoreTarget iStoreTarget, bool useAltInteraction, Bot bot) : base(moving, iStoreTarget)
+    public InteractableCommand(Transform moving, IStoreTarget iStoreTarget, bool useAltInteraction, Bot bot, string targetName, TYPE type) : base(moving, iStoreTarget)
     {
         _bot = bot;
         _useAltInteraction = useAltInteraction;
+        _targetName = targetName;
+        _type = type;
     }
 
     public override bool MoveNext()

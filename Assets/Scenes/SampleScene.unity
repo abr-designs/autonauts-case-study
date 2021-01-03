@@ -1801,6 +1801,7 @@ MonoBehaviour:
   searchCommandElement: {fileID: 7290525318591613377, guid: 54088ecbfe260ca40b20340dd0df2258, type: 3}
   moveCommandElement: {fileID: 2828797800020631913, guid: 0dfd461c84b023145aef7a00aa910c9e, type: 3}
   interactCommandElement: {fileID: 1707996193585368260, guid: 0613cba005bffef4cbf93b8b687e5e20, type: 3}
+  dropCommandElement: {fileID: 5227896406630223526, guid: 26a5b80248d916b4e91e638463362cbd, type: 3}
 --- !u!114 &957472539
 MonoBehaviour:
   m_ObjectHideFlags: 0

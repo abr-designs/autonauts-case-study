@@ -26,6 +26,9 @@ public class CommandElementFactory : MonoBehaviour
     private MoveCommandElement moveCommandElement;
     [SerializeField]
     private InteractCommandElement interactCommandElement;
+    
+    [SerializeField]
+    private DropCommandElement dropCommandElement;
 
     //====================================================================================================================//
 
@@ -77,6 +80,7 @@ public class CommandElementFactory : MonoBehaviour
         
         switch (command)
         {
+            //--------------------------------------------------------------------------------------------------------//
             case LoopCommandBase loopCommandBase:
                 var loop = Instantiate(loopCommandElement, rectTransform);
                 loop.transform.pivot = new Vector2(0, 1);
@@ -84,26 +88,50 @@ public class CommandElementFactory : MonoBehaviour
                     
                 GenerateCodeIn(loop.transform, loopCommandBase.InternalCommands);
                 return loop;
+            //--------------------------------------------------------------------------------------------------------//
             case InteractableCommand interactableCommand:
                 var interactable = Instantiate(interactCommandElement, rectTransform);
                 interactable.transform.pivot = new Vector2(0, 1);
+                var data = new
+                {
+                    interactableCommand.Type,
+                    interactableCommand.TargetName,
+                    interactableCommand.UseAltInteraction
+                };
+                interactable.Init(data.TargetName,data.UseAltInteraction, data.Type);
                 return interactable;
-                
-            case MoveCommand moveCommand:
-                var move = Instantiate(moveCommandElement, rectTransform);
-                move.transform.pivot = new Vector2(0, 1);
-                return move;
-            
+            //--------------------------------------------------------------------------------------------------------//
+            //case MoveCommand moveCommand:
+            //    var move = Instantiate(moveCommandElement, rectTransform);
+            //    move.transform.pivot = new Vector2(0, 1);
+            //    return move;
+            case MoveToPositionCommand moveToPosition:
+                var moveToPos = Instantiate(moveCommandElement, rectTransform);
+                moveToPos.transform.pivot = new Vector2(0, 1);
+                moveToPos.Init(moveToPosition.Target);
+                return moveToPos;
+            case StoreAndMoveToStoredTargetCommand storeAndMoveToStoredTargetCommand:
+                var StoreMoveToTarget = Instantiate(moveCommandElement, rectTransform);
+                StoreMoveToTarget.transform.pivot = new Vector2(0, 1);
+                StoreMoveToTarget.Init(storeAndMoveToStoredTargetCommand.TargetInteractable);
+                return StoreMoveToTarget;
             case MoveToStoredTargetCommand moveCommand:
                 var moveToTarget = Instantiate(moveCommandElement, rectTransform);
                 moveToTarget.transform.pivot = new Vector2(0, 1);
+                moveToTarget.Init(moveCommand.TargetName);
                 return moveToTarget;
-            
+            //--------------------------------------------------------------------------------------------------------//
             case SearchCommand searchCommand:
                 var search = Instantiate(searchCommandElement, rectTransform);
                 search.transform.pivot = new Vector2(0, 1);
+                search.Init(searchCommand.ItemData, searchCommand.SearchLocation, searchCommand.Radius);
                 return search;
-            
+            //--------------------------------------------------------------------------------------------------------//
+            case DropCommand dropCommand:
+                var drop = Instantiate(dropCommandElement, rectTransform);
+                drop.transform.pivot = new Vector2(0, 1);
+                return drop;
+            //--------------------------------------------------------------------------------------------------------//
             default:
                 throw new ArgumentOutOfRangeException(nameof(command), command, null);
 

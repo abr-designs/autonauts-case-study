@@ -62,7 +62,7 @@ public class ActionRecorder : MonoBehaviour
 
     public static void RecordActions(IEnumerable<ICommand> actions)
     {
-        
+        CommandElementFactory.Instance.GenerateCodeIn(UIManager.Instance.CodeContainerTransform, actions);
     }
 
     public static void SetBuildingTarget(Building building)

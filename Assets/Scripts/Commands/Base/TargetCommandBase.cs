@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class TargetCommandBase : ICommand
 {
+    public IInteractable StoredTarget => IStoreTarget?.StoredTarget;
+
     protected readonly Transform Moving;
     protected readonly IStoreTarget IStoreTarget;
 

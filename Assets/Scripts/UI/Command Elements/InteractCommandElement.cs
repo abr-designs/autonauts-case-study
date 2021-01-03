@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -8,29 +7,34 @@ public class InteractCommandElement : CommandElementBase
     [SerializeField]
     private TMP_Text commandText;
     
-    private IInteractable _interactable;
+    //private IInteractable _interactable;
+    private string _targetName;
     private bool _useAlt;
+    private InteractableCommand.TYPE _type;
     
-    public void Init(IInteractable interactable, bool useAlt)
+    public void Init(string targetName, bool useAlt, InteractableCommand.TYPE type)
     {
-        _interactable = interactable;
+        _targetName = targetName;
         _useAlt = useAlt;
+        _type = type;
 
-        switch (interactable)
+        switch (_type)
         {
-            case Item item:
-                commandText.text = $"Pickup {item.ItemData.Name}";
+            case InteractableCommand.TYPE.ITEM:
+                commandText.text = $"Pick up {targetName}";
                 break;
-            //TODO Need to understand context of removing or adding items
-            case Building building:
-                commandText.text = _useAlt ? $"Add to {building.Name}" : $"Take from {building.Name}";
+            case InteractableCommand.TYPE.BUILDING:
+                commandText.text = _useAlt ? $"Add to {targetName}":$"Take from {targetName}";
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+
     }
     
     public override ICommand GenerateCommand()
     {
         var bot = UIManager.Instance.selectedBot;
-        return new InteractableCommand(bot.transform, bot, _useAlt, bot);
+        return new InteractableCommand(bot.transform, bot, _useAlt, bot, _targetName, _type);
     }
 }

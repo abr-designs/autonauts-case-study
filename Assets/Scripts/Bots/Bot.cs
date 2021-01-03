@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPause, ITransferItem
@@ -55,10 +56,21 @@ public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPa
 
     private void OnMouseDown()
     {
+        if (ActionRecorder.IsRecording)
+            return;
+        
         UIManager.Instance.SetCodeWindowActive(true, this);
     }
 
     //====================================================================================================================//
+
+    public void SetCommands(IEnumerable<ICommand> commands)
+    {
+        _command = commands.ToArray();
+    }
+    
+    //====================================================================================================================//
+    
 
     private void ProcessStep()
     {

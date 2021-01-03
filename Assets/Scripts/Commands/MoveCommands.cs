@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class MoveCommand : ICommand
 {
+    
     private readonly Transform _moving;
     
     private readonly Transform _target;
@@ -41,6 +42,8 @@ public class MoveCommand : ICommand
 }
 public class MoveToPositionCommand : ICommand
 {
+    public Vector3 Target => _target;
+
     private readonly Transform _moving;
     
     private readonly Vector3 _target;
@@ -80,11 +83,14 @@ public class MoveToPositionCommand : ICommand
 }
 public class MoveToStoredTargetCommand : TargetCommandBase
 {
+    public string TargetName { get;}
+    
     private readonly float _speed;
     
-    public MoveToStoredTargetCommand(Transform moving, IStoreTarget iStoreTarget, float speed) : base(moving, iStoreTarget)
+    public MoveToStoredTargetCommand(Transform moving, IStoreTarget iStoreTarget, float speed, string targetName) : base(moving, iStoreTarget)
     {
         _speed = speed;
+        TargetName = targetName;
     }
     
     public override bool MoveNext()
@@ -112,12 +118,14 @@ public class MoveToStoredTargetCommand : TargetCommandBase
 }
 public class StoreAndMoveToStoredTargetCommand : TargetCommandBase
 {
+    public IInteractable TargetInteractable { get; }
     private readonly float _speed;
     
     public StoreAndMoveToStoredTargetCommand(Transform moving, IStoreTarget iStoreTarget, IInteractable targetInteractable, float speed) : base(moving, iStoreTarget)
     {
         _speed = speed;
         IStoreTarget.StoredTarget = targetInteractable;
+        TargetInteractable = targetInteractable;
     }
     
     public override bool MoveNext()

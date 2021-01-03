@@ -9,23 +9,23 @@ public class MoveCommandElement : CommandElementBase
     [SerializeField]
     private TMP_Text Text;
 
-    private IInteractable _interactable;
-    
     private Vector3 storedPosition;
-    
-    public void Init(IInteractable interactable)
-    {
-        _interactable = interactable;
 
-        switch (interactable)
-        {
-            case Item item:
-                Text.text = $"Move to {item.ItemData.Name}";
-                break;
-            case Building building:
-                Text.text = $"Move to {building.Name}";
-                break;
-        }
+    private string _targetName;
+    private IInteractable _targetInteractable;
+    
+    public void Init(in string targetName)
+    {
+        _targetName = targetName;
+        Text.text = $"Move to {_targetName}";
+    }
+    public void Init(in IInteractable targetInteractable)
+    {
+        if (!(targetInteractable is Building building))
+            throw new Exception();
+        
+        Text.text = $"Move to {building.Name}";
+        _targetInteractable = building;
     }
     public void Init(Vector3 position)
     {
@@ -38,21 +38,19 @@ public class MoveCommandElement : CommandElementBase
     {
         var bot = UIManager.Instance.selectedBot;
 
-        switch (_interactable)
+        if (_targetInteractable != null)
         {
-            case Item _:
-                return new MoveToStoredTargetCommand(bot.transform, bot, bot.Speed);
-            case Building building:
-                return new MoveCommand(bot.transform, building.transform, bot.Speed);
-            default:
-            {
-                if (storedPosition != Vector3.zero)
-                {
-                    return new MoveToPositionCommand(bot.transform, storedPosition, bot.Speed);
-                }
+            return new StoreAndMoveToStoredTargetCommand(bot.transform, bot, _targetInteractable, bot.Speed);
+        }
 
-                break;
-            }
+        if (!string.IsNullOrEmpty(_targetName))
+        {
+            return new MoveToStoredTargetCommand(bot.transform, bot, bot.Speed, _targetName);
+        }
+
+        if (storedPosition != Vector3.zero)
+        {
+            return new MoveToPositionCommand(bot.transform, storedPosition, bot.Speed);
         }
 
         throw new ArgumentOutOfRangeException();

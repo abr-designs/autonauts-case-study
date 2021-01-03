@@ -18,6 +18,9 @@ public class UIManager : MonoBehaviour
     }
 
     //====================================================================================================================//
+    
+    public RectTransform CodeContainerTransform => codeContainerTransform;
+
 
     [SerializeField]
     private GameObject codeWindow;
@@ -123,6 +126,12 @@ public class UIManager : MonoBehaviour
             ActionRecorder.ToggleIsRecording();
             playButton.interactable = !ActionRecorder.IsRecording;
             repeatButton.interactable = ActionRecorder.IsRecording;
+
+            if (!ActionRecorder.IsRecording)
+            {
+                var newCommands = GenerateCode();
+                selectedBot.SetCommands(newCommands);
+            }
 
         });
         _playButtonText = playButton.GetComponentInChildren<TMP_Text>();

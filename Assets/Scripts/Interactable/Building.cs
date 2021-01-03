@@ -43,7 +43,7 @@ public class Building : MonoBehaviour, IInteractable, IHoldItems, IRecordAction
             ActionRecorder.RecordActions(new ICommand[]
             {
                 new StoreAndMoveToStoredTargetCommand(botTransform, selectedBot, this, selectedBot.Speed),
-                new InteractableCommand(botTransform, selectedBot, false, selectedBot)
+                new InteractableCommand(botTransform, selectedBot, false, selectedBot, Name, InteractableCommand.TYPE.BUILDING)
             });
         }
         //right click
@@ -53,7 +53,7 @@ public class Building : MonoBehaviour, IInteractable, IHoldItems, IRecordAction
             ActionRecorder.RecordActions(new ICommand[]
             {
                 new StoreAndMoveToStoredTargetCommand(botTransform, selectedBot, this, selectedBot.Speed),
-                new InteractableCommand(botTransform, selectedBot, true, selectedBot)
+                new InteractableCommand(botTransform, selectedBot, true, selectedBot, Name, InteractableCommand.TYPE.BUILDING)
             });
         }
     }

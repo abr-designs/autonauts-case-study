@@ -35,8 +35,8 @@ public class Item : MonoBehaviour, IInteractable, IRecordAction
             ActionRecorder.RecordActions(new ICommand[]
             {
                 new SearchCommand(botTransform, selectedBot, ItemData, transform.position, 20f),
-                new MoveToStoredTargetCommand(botTransform, selectedBot, selectedBot.Speed),
-                new InteractableCommand(botTransform, selectedBot,false, selectedBot)
+                new MoveToStoredTargetCommand(botTransform, selectedBot, selectedBot.Speed, ItemData.Name),
+                new InteractableCommand(botTransform, selectedBot,false, selectedBot, itemData.Name, InteractableCommand.TYPE.ITEM)
             });
         }
         //right click

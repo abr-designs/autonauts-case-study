@@ -13,7 +13,10 @@ public class DropCommand : ICommand
 
     public bool MoveNext()
     {
-        _iTransferItem.DropItems();
+        //TODO Get items to drop
+       var toDrop =  _iTransferItem.DropItems();
+       
+       //TODO Spawn Items to drop here
 
         return true;
     }

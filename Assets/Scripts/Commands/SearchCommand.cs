@@ -5,6 +5,11 @@ using UnityEngine;
 //FIXME This needs to store a reference, but also be able to be called using regular MoveNext
 public class SearchCommand : TargetCommandBase
 {
+    public ItemData ItemData => _itemData;
+    public Vector3 SearchLocation => _searchLocation;
+    public float Radius => _radius;
+
+
     private static ObjectManager _objectManager;
     
     private readonly ItemData _itemData;
