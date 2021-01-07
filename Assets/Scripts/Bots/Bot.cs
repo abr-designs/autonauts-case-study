@@ -46,6 +46,7 @@ public class Bot : MonoBehaviour, IStoreTarget, IConditional, IHoldItems, ICanPa
     {
         if (ObjectManager == null)
             ObjectManager = FindObjectOfType<ObjectManager>();
+
     }
 
     // Update is called once per frame

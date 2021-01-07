@@ -395,6 +395,8 @@ MonoBehaviour:
   - {fileID: 1078713022}
   - {fileID: 1759732980}
   - {fileID: 1982740057}
+  - {fileID: 1279419782}
+  - {fileID: 1181193485}
 --- !u!4 &33390247
 Transform:
   m_ObjectHideFlags: 0
@@ -2440,6 +2442,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1181193480}
   - component: {fileID: 1181193484}
+  - component: {fileID: 1181193485}
   - component: {fileID: 1181193483}
   - component: {fileID: 1181193482}
   - component: {fileID: 1181193481}
@@ -2539,6 +2542,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+--- !u!114 &1181193485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181193479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d41c9f550161720468715220f8746c30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData:
+    Name: Bot
+    Space: 2
 --- !u!1 &1255870779
 GameObject:
   m_ObjectHideFlags: 0
@@ -2781,6 +2799,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1279419781}
   - component: {fileID: 1279419780}
+  - component: {fileID: 1279419782}
   - component: {fileID: 1279419779}
   - component: {fileID: 1279419778}
   - component: {fileID: 1279419777}
@@ -2880,6 +2899,21 @@ Transform:
   m_Father: {fileID: 20760189}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1279419782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279419776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d41c9f550161720468715220f8746c30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData:
+    Name: Bot
+    Space: 2
 --- !u!1 &1294965196
 GameObject:
   m_ObjectHideFlags: 0
@@ -4618,8 +4652,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1804484490}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.190001, y: 0.5, z: -2.4599998}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -11.67, y: 0.5, z: -2.4599998}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 33390247}
   m_RootOrder: 4
@@ -4699,8 +4733,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData:
-    Name: Box
-    Space: 2
+    Name: Not Box
+    Space: 4
 --- !u!1 &1875491834
 GameObject:
   m_ObjectHideFlags: 0
